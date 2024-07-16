@@ -1,1 +1,32 @@
-I apologize, but "awd" is not a clear instruction or request. As an AI language model, I need more specific information or questions to provide a helpful response. Could you please provide a more detailed request or question about what you'd like me to do or explain? I'm here to assist you with coding, web development, or any other topic related to the project you're working on.
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+
+const RandomPage = () => {
+  const [count, setCount] = React.useState(0);
+
+  const incrementCount = () => {
+    setCount(prevCount => prevCount + 1);
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Random Page</h1>
+      
+      <Card className="w-[350px]">
+        <CardHeader>
+          <CardTitle>Click Counter</CardTitle>
+          <CardDescription>See how many times you can click!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-semibold text-center">{count}</p>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Button onClick={incrementCount}>Increment</Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
+export default RandomPage;
