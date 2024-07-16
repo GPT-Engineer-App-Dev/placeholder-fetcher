@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const HackerNewsStory = ({ story }) => (
-  <div className="bg-yellow-100 p-4 rounded-lg shadow mb-4 border-2 border-blue-500">
-    <h2 className="text-xl font-semibold mb-2 text-blue-700">{story.title}</h2>
-    <p className="text-blue-600 mb-2">Upvotes: {story.score}</p>
+  <div className="bg-white p-4 rounded-lg shadow mb-4 border border-gray-200">
+    <h2 className="text-xl font-semibold mb-2 text-gray-800">{story.title}</h2>
+    <p className="text-gray-600 mb-2">Upvotes: {story.score}</p>
     <Button 
-      className="bg-blue-500 hover:bg-blue-600 text-yellow-100"
+      className="bg-blue-500 hover:bg-blue-600 text-white"
       onClick={() => window.open(story.url, '_blank')}
     >
       Read More
@@ -16,10 +16,10 @@ const HackerNewsStory = ({ story }) => (
 );
 
 const SkeletonLoader = () => (
-  <div className="bg-yellow-100 p-4 rounded-lg shadow mb-4 animate-pulse border-2 border-blue-300">
-    <div className="h-6 bg-blue-200 rounded w-3/4 mb-2"></div>
-    <div className="h-4 bg-blue-200 rounded w-1/4 mb-2"></div>
-    <div className="h-8 bg-blue-200 rounded w-1/3"></div>
+  <div className="bg-white p-4 rounded-lg shadow mb-4 animate-pulse">
+    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+    <div className="h-8 bg-gray-200 rounded w-1/3"></div>
   </div>
 );
 
@@ -27,6 +27,7 @@ const Index = () => {
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -51,22 +52,46 @@ const Index = () => {
     fetchStories();
   }, []);
 
-  const filteredStories = stories.filter(story =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStories = stories.filter(story => {
+    const matchesSearch = story.title.toLowerCase().includes(searchTerm.toLowerCase());
+    if (filter === 'all') return matchesSearch;
+    if (filter === 'highScore') return matchesSearch && story.score > 100;
+    if (filter === 'recent') return matchesSearch && (Date.now() - story.time * 1000 < 24 * 60 * 60 * 1000);
+    return matchesSearch;
+  });
 
   return (
-    <div className="min-h-screen bg-blue-500 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-8 text-yellow-300">Hacker News Top 100 Stories</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Hacker News Top 100 Stories</h1>
         
-        <Input
-          type="text"
-          placeholder="Search stories..."
-          className="mb-6 bg-yellow-100 text-blue-700 placeholder-blue-400 border-2 border-yellow-300"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="mb-6 flex space-x-4">
+          <Input
+            type="text"
+            placeholder="Search stories..."
+            className="flex-grow"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Button 
+            className={`${filter === 'all' ? 'bg-blue-500' : 'bg-gray-300'} text-white`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </Button>
+          <Button 
+            className={`${filter === 'highScore' ? 'bg-blue-500' : 'bg-gray-300'} text-white`}
+            onClick={() => setFilter('highScore')}
+          >
+            High Score
+          </Button>
+          <Button 
+            className={`${filter === 'recent' ? 'bg-blue-500' : 'bg-gray-300'} text-white`}
+            onClick={() => setFilter('recent')}
+          >
+            Recent
+          </Button>
+        </div>
 
         {loading ? (
           Array(10).fill().map((_, index) => <SkeletonLoader key={index} />)
